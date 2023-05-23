@@ -16,6 +16,8 @@ type BuildControlsProp = {
     ingredientReduced:Function
     disabledInfo:IngredientBool
     price:number
+    purchasable:boolean
+    ordered:Function
 }
 
 const buildControls = (props:BuildControlsProp) => (
@@ -29,6 +31,7 @@ const buildControls = (props:BuildControlsProp) => (
             ingredientReduced={()=>props.ingredientReduced(control.type)} 
             disabled={props.disabledInfo[control.type as keyof IngredientBool]}/>
         ))}
+        <button className={classes.OrderButton} disabled={!props.purchasable} onClick={()=>props.ordered()}>Order Now</button>
     </div>
 );
 

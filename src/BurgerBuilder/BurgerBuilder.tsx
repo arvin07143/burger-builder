@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import BurgerPreview from "./BurgerPreview/BurgerPreview";
 import BuildControls from "./BuildControls/BuildControls";
-import { any } from "prop-types";
+import Modal from "./Modal/Modal";
+import OrderSummary from "./OrderSummary/OrderSummary";
 
 export type Ingredient = {
     salad: number;
@@ -36,19 +37,43 @@ const BurgerBuilder = () => {
 
     const [price, setPrice] = useState<number>(4);
 
+    const [purchasable, setPurchasable] = useState(false);
+
+    const [purchasing, setPurchasing] = useState(false);
+
+    const updatePurchaseState = (ingredientList:Ingredient) => {
+        const sum = Object.keys(ingredientList).map(igKey =>{
+            return ingredientList[igKey as keyof Ingredient];
+        })
+        .reduce((sum,el)=>{
+            return sum + el;
+        },0)
+
+        setPurchasable(sum>0)
+    }
+
+    const updatePurchasingState = () =>{
+        setPurchasing(true);
+    }
+
     const addIngredientHandler = (type:keyof(Ingredient)) => {
+
+        const newValue = {...ingredients,[type]:ingredients[type]+1}
         setIngredients(
-            {...ingredients,[type]:ingredients[type]+1}
+            newValue
         )
         setPrice(price+INGREDIENT_PRICE[type])
+        updatePurchaseState(newValue)
     };
 
     const removeIngredientHandler = (type:keyof(Ingredient)) => {
         if(ingredients[type]>0){
+            const newValue = {...ingredients,[type]:ingredients[type]-1}
             setIngredients(
-                {...ingredients,[type]:ingredients[type]-1}
+                newValue
             )
             setPrice(price-INGREDIENT_PRICE[type])
+            updatePurchaseState(newValue)
         }
     };
 
@@ -66,17 +91,22 @@ const BurgerBuilder = () => {
             disabledInfo[key as keyof Ingredient] = true;
         }
     })
-    
 
+    console.log(purchasing);
 
     return (
         <div>
+            <Modal show={purchasing}>
+                <OrderSummary ingredients={ingredients} />
+            </Modal>
             <div><BurgerPreview {...ingredients} /></div>
             <div><BuildControls 
             price={price}
             ingredientAdded={addIngredientHandler}
             ingredientReduced={removeIngredientHandler}
-            disabledInfo={disabledInfo} /></div>
+            disabledInfo={disabledInfo}
+            purchasable = {purchasable}
+            ordered={updatePurchasingState} /></div>
         </div>);
 };
 
