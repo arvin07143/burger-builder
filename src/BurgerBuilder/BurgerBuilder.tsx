@@ -77,6 +77,13 @@ const BurgerBuilder = () => {
         }
     };
 
+    const purchaseCancelHandler = ()=>{
+        setPurchasing(false);
+    }
+
+    const purchaseContinue = () => {
+        alert('You continue');
+    }
 
 
     let disabledInfo = {
@@ -96,8 +103,11 @@ const BurgerBuilder = () => {
 
     return (
         <div>
-            <Modal show={purchasing}>
-                <OrderSummary ingredients={ingredients} />
+            <Modal show={purchasing} closed={purchaseCancelHandler}>
+                <OrderSummary ingredients={ingredients}
+                purchaseCancelled={purchaseCancelHandler}
+                purchaseContinue={purchaseContinue}
+                price={price} />
             </Modal>
             <div><BurgerPreview {...ingredients} /></div>
             <div><BuildControls 
